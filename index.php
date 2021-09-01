@@ -21,6 +21,8 @@ class Index extends Page
         return array();
     }
 
+    /**Seite wird erzeugt
+     */
     protected function generateView():void
     {
 		$data = $this->getViewData();

@@ -16,42 +16,49 @@ class MainPage extends Page
         parent::__destruct();
     }
 
+    /** In der Funktion wird auf die Datenbank geschrieben, wenn die Seite aufgerufen wird.
+     * @return array enthält nur den Status ob der Nutzer angemeldet ist oder nicht
+     * @throws Exception falls die SQL-Query einen Fehler zurückgibt
+     */
     protected function getViewData():array
     {
         $data = array();
 
         if(isset($_SESSION["login_status"])){
-            $data[] = $_SESSION["login_status"];
-            if($_SESSION["login_status"] == 1){
+            $data[] = $_SESSION["login_status"];//Status ob Nutzer angemeldet ist oder nicht
+            if($_SESSION["login_status"] == 1){//Wenn der Nutzer angemeldet ist
                 $username = $_SESSION["login_user"];
-                $data[] = $username;
+                $data[] = $username;//Nutzername wird gespeichert
 
-                $sql_query = "SELECT userID FROM user WHERE username = '" . $username . "'";
+                $sql_query = "SELECT userID FROM user WHERE username = '" . $username . "'";//Query zum erhalten der userID des zugehörigen Usernames
 
-                $results = $this->_database->query($sql_query);
-                if(!$results) throw new Exception("Fehler in Abfrage: " . $this->_database->error);
+                $results = $this->_database->query($sql_query);//Query wird ausgeführt
+                if(!$results) throw new Exception("Fehler in Abfrage: " . $this->_database->error);//Fehlermeldung falls SQL-Fehler
 
                 $record = $results->fetch_object();
                 $userID = $record->userID;
                 $results->free_result();
 
-                $sql_query = "INSERT INTO visits(userID, time) VALUES ('" . $userID . "', now())";
+                $sql_query = "INSERT INTO visits(userID, time) VALUES ('" . $userID . "', now())";//Query um zu speichern, dass die Seite geladen wurde
 
-                $results = $this->_database->query($sql_query);
-                if(!$results) throw new Exception("Fehler in Abfrage: " . $this->_database->error);
+                $results = $this->_database->query($sql_query);//Query wird ausgeführt
+                if(!$results) throw new Exception("Fehler in Abfrage: " . $this->_database->error);//Fehlermeldung falls SQL-Fehler
             }
         }
 
         return $data;
     }
 
+    /**Seite wird generiert
+     */
     protected function generateView():void
     {
-		$data = $this->getViewData();
+		$data = $this->getViewData();//Daten werden geladen und SQL-Insert wird ausgeführt
         $this->generatePageHeader('Main Page');
 
-        $login_status = $data[0];
+        $login_status = $data[0];//Status ob Nutzer angemeldet ist
 
+        //Topbar falls der Nutzer nicht angemeldet ist
         if($login_status == 0){
             echo <<<EOD
             <div class="topbar">
@@ -60,6 +67,7 @@ class MainPage extends Page
             </div>
 EOD;
         }
+        //Topbar falls der Nutzer angemeldet ist
         else if($login_status == 1){
             echo <<< EOD
             <div class="topbar">
@@ -68,7 +76,7 @@ EOD;
             </div>
 EOD;
         }
-
+        //Seiteninhalt falls der Nutzer nicht angemeldet ist
         if($login_status == 0){
             echo <<< EOD
             <h2>Du bist noch nicht angemeldet!</h2>
@@ -76,6 +84,7 @@ EOD;
 EOD;
 
         }
+        //Seiteninhalt falls der Nutzer angemeldet ist
         else if($login_status == 1){
             $user = $data[1];
             echo <<< EOD

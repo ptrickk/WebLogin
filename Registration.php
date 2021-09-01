@@ -75,26 +75,29 @@ EOD;
             $header_dest = 'Location: /login/Registration.php';
 
             $username = $_POST['username'];
+            $username = $this->_database->real_escape_string($username);
+
             $email = $_POST['email'];
+            $email = $this->_database->real_escape_string($email);
             $password = $_POST['password1'];
             $password = md5($password);
 
             $firstname = "";
             if(isset($_POST['firstname'])){
                 $firstname = $_POST['firstname'];
+                $firstname = $this->_database->real_escape_string($firstname);
             }
 
             $surname = "";
             if(isset($_POST['surname'])){
                 $surname = $_POST['surname'];
+                $surname = $this->_database->real_escape_string($surname);
             }
 
             $bday = "";
             if(isset($_POST['birthday'])){
                 $bday = $_POST['birthday'];
             }
-
-
 
             $sql_query = "SELECT * FROM user WHERE username = '$username'";
             $results = $this->_database->query($sql_query);

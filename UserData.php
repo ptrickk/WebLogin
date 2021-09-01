@@ -2,7 +2,12 @@
 
 require_once './Page.php';
 
-
+/**UserData
+ * Auf dieser Seite soll man als angemeldeter Nutzer
+ * Nuternamen von sich oder anderen Konten eingeben und bekommt dann über eine API die
+ * regelmäßig abgefragt wird alle wichtigen Daten über dieses Konto und wie öft es auf der
+ * MainPage.php war und wann es dort zuletzt war
+ */
 class UserData extends Page
 {
 
@@ -16,6 +21,10 @@ class UserData extends Page
         parent::__destruct();
     }
 
+    /**Es werden die Informationen ob der Nutzer der aktuellen Session
+     * angemeldet ist und wenn ja, welchen Nutzername er hat
+     * @return array enthält den Status ob der Nutzer eingelogt ist und gegebenenfalls den Nutzernamen
+     */
     protected function getViewData():array
     {
         $data = array();
@@ -23,20 +32,24 @@ class UserData extends Page
         if(isset($_SESSION["login_status"])){
             $data[] = $_SESSION["login_status"];
             if($data[0] == 1){
-                $data[] = $_SESSION["login_user"];
+                //Nutzer ist angemeldet
+                $data[] = $_SESSION["login_user"];//Username wird sich gemerkt
             }
             else {
-                $data[] = "";
+                $data[] = "";//Nutzer ist nicht angemeldet (daher leerer Nutzername)
             }
         }
         else {
-            $data[] = 0;
-            $data[] = "";
+            //Es wurde noch kein Login Status eingetragen
+            $data[] = 0;//deshalb nicht eingelogt (0)
+            $data[] = "";//und kein Nutzername
         }
 
         return $data;
     }
 
+    /**Hier wird die Seite erzeugt
+     */
     protected function generateView():void
     {
 		$data = $this->getViewData();
@@ -45,17 +58,20 @@ class UserData extends Page
         $login_status = $data[0];
         $username = $data[1];
 
+        //Topbar falls der Nutzer nicht angemeldet ist
         if($login_status == 0){
             echo <<<EOD
             <p class="topbar"><a href="Login.php">anmelden</a> <a href="Registration.php">registrieren</a></p>
 EOD;
         }
+        //Topbar falls der Nutzer angemeldet ist
         else if($login_status == 1){
             echo <<< EOD
-            <p class="topbar"><a href="Logout.php">abmelden</a></p>
+            <p class="topbar"><a href="MainPage.php">Hauptseite</a><a href="Logout.php">abmelden</a></p>
 EOD;
         }
 
+        //Seiteninhalt falls der Nutzer angemeldet ist
         if($login_status == 1){
             echo <<< EOD
         <div class="userdata">
@@ -68,6 +84,7 @@ EOD;
         </div>
 EOD;
         }
+        //Seiteninhalt falls der Nutzer nicht angemeldet ist
         else {
            echo <<< EOD
         Sie müssen sich erst <a href="Login.php">anmelden</a> oder <a href="Registration.php">registrieren</a>

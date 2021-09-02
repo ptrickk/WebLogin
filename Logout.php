@@ -2,7 +2,9 @@
 
 require_once './Page.php';
 
-
+/**Diese Klasse erzeugt keine Seite sondern leitet direkt auf eine andere Seite weiter,
+ * nachdem der Nutzer der aktuellen Session abgemeldet wurde
+ */
 class Logout extends Page
 {
 
@@ -15,7 +17,7 @@ class Logout extends Page
     {
         parent::__destruct();
     }
-
+    //Der Login-Status wird immer auf 0 gesetzt (0 = nicht angemeldet)
     protected function getViewData():array
     {
         $_SESSION["login_status"] = 0;
@@ -23,6 +25,9 @@ class Logout extends Page
         return array();
     }
 
+    /**
+     * Es wird keine Seite erzeugt, sondern immer auf die MainPage.php weitergeleitet
+     */
     protected function generateView():void
     {
 		$data = $this->getViewData();
